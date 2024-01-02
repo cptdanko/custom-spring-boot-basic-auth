@@ -8,37 +8,35 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
+
 @Slf4j
 public class CustomUserDetailsManager implements UserDetailsService, UserDetailsManager, UserDetailsPasswordService {
 
     private final HashMap<String, UserDetails> userMap = new HashMap<>();
+    public static final CustomUserDetailsManager instance = new CustomUserDetailsManager();
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("in load by username");
-        try {
-            return userMap.values()
-                    .stream()
-                    .filter(userDetails -> userDetails.getUsername().equalsIgnoreCase(username))
-                    .findFirst()
-                    .get();
-        } catch (UsernameNotFoundException unfe) {
-            throw  new UsernameNotFoundException("Username "+ username+" not found", unfe);
-        }
+        log.info("The size of the userMap "+ userMap.values().size());
+        log.info(username);
+        log.info("************************************");
+        return userMap.values()
+                .stream()
+                .filter(userDetails -> userDetails.getUsername().equalsIgnoreCase(username))
+                .findFirst()
+                .orElseThrow();
     }
 
     @Override
     public void createUser(UserDetails user) {
         String id = "USR_"+System.currentTimeMillis();
-        userMap.put(id, user);
-        log.info("Added user with id ->" + id);
-        log.info(user.getUsername());
-        user.getAuthorities()
-                .stream()
-                .findFirst()
-                .ifPresent(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-        log.info("map size " + this.userMap.size());
-        this.userMap.put(user.getUsername(), user);
-        log.info("map size after " + this.userMap.size());
+        // log.info("About to print before");
+        // userMap.values().forEach(userDetails -> log.info(userDetails.getUsername()));
+        // log.info(user.getUsername());
+        userMap.put(user.getUsername(), user);
+        //log.info("map size after " + userMap.size());
+        // userMap.values().forEach(userDetails -> log.info(userDetails.getUsername()));
     }
 
     @Override
