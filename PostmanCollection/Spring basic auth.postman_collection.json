@@ -112,13 +112,13 @@
 					"type": "basic",
 					"basic": [
 						{
-							"key": "password",
-							"value": "bs1234",
+							"key": "username",
+							"value": "bsoni",
 							"type": "string"
 						},
 						{
-							"key": "username",
-							"value": "bsoni",
+							"key": "password",
+							"value": "password",
 							"type": "string"
 						}
 					]
@@ -127,7 +127,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"username\": \"s\",\n    \"password\": \"s1\",\n    \"roles\": [\"admin\", \"user\"]\n}",
+					"raw": "{\n\t\"username\": \"s2\",\n    \"password\": \"s2\",\n    \"roles\": [\"admin\", \"user\"]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
