@@ -1,10 +1,8 @@
 package com.mdt.security.demo;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +17,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // setup basic authentication
         http.httpBasic(withDefaults())
                     .authorizeHttpRequests(auth -> {
                         try {
@@ -31,29 +30,24 @@ public class SecurityConfig {
                                             ,"/api/user/ping")
                                     .permitAll()
                                     .anyRequest()
-                                    .authenticated()
-                                    .and()
-                                    .csrf()
-                                    .ignoringRequestMatchers("/api/user/create");
+                                    .authenticated();
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                     });
-        // http.csrf(AbstractHttpConfigurer::disable);
+        // configure the csrf token to ignore the post request to create new users
+        http.csrf(httpSecurityCsrfConfigurer ->
+                httpSecurityCsrfConfigurer.ignoringRequestMatchers("/api/user/create"));
         return http.build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        //CustomUserDetailsManager inMemoryUserDetailsManager = CustomUserDetailsManager.instance;
-        // CustomUserDetailsManager inMemoryUserDetailsManager = new CustomUserDetailsManager();
-        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+        InMemoryUserDetailsManager inMemoryUserDetailsManager = CustomUserDetailsManager.instance.getInMemoryUserDetailsManager();
         UserDetails userDetails = User.withUsername("bsoni")
                 .password(passwordEncoder().encode("password"))
-                // .authorities("read")
                 .roles("ADMIN", "USER")
                 .build();
-        // CustomUserDetailsManager.instance.createUser(userDetails);
         inMemoryUserDetailsManager.createUser(userDetails);;
         return inMemoryUserDetailsManager;
     }

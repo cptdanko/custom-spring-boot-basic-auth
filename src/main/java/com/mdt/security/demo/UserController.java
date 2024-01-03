@@ -1,7 +1,6 @@
 package com.mdt.security.demo;
 
-import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,11 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@Log
+@Slf4j
 public class UserController {
 
-    // @Autowired
-    // private final CustomUserDetailsManager customUserDetailsManager = new CustomUserDetailsManager();
     @GetMapping(value = "/ping")
     private ResponseEntity<CustomUser> pingUser() {
         List<GrantedAuthority> ROLE_USER = Collections
@@ -42,10 +39,8 @@ public class UserController {
 
         CustomUser cUser = new CustomUser(user.getUsername(), bCryptPasswordEncoder.encode(user.getPassword()), auths);
         log.info(cUser.toString());
-        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+        InMemoryUserDetailsManager inMemoryUserDetailsManager = CustomUserDetailsManager.instance.getInMemoryUserDetailsManager();
         inMemoryUserDetailsManager.createUser(cUser);
-        // CustomUserDetailsManager.instance.createUser(cUser);
-        // customUserDetailsManager.createUser(cUser);
         log.info("Successfully created the user");
         return new ResponseEntity<>(cUser, HttpStatus.CREATED);
     }
