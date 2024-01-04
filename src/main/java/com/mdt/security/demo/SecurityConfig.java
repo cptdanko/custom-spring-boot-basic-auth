@@ -24,10 +24,9 @@ public class SecurityConfig {
                             auth
                                     .requestMatchers("/api/user/create").hasAnyRole("USER")
                                     .requestMatchers("/index"
-                                            , "/login"
-                                            , "/logout"
                                             ,"/favicon.ico"
-                                            ,"/api/user/ping")
+                                            ,"/api/user/ping"
+                                            ,"/say/helloNoAuth")
                                     .permitAll()
                                     .anyRequest()
                                     .authenticated();

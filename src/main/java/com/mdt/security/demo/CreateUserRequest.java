@@ -1,9 +1,6 @@
 package com.mdt.security.demo;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,6 +8,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
+@Builder
+@AllArgsConstructor
 public class CreateUserRequest {
     private String username;
     private String password;
