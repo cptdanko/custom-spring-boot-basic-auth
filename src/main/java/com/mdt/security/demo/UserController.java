@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,17 +28,20 @@ public class UserController {
         return new ResponseEntity<>(cUser, HttpStatus.OK);
     }
     @PostMapping("/create")
-    public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest user) {
+    public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest createUserRequest) {
         String ROLE_PREFIX = "ROLE_";
-        log.info(user.toString());
+        log.info(createUserRequest.toString());
         log.info("About to create user");
+        if(ObjectUtils.isEmpty(createUserRequest)) {
+            return new ResponseEntity<>("Please supply create user body", HttpStatus.BAD_REQUEST);
+        }
         List<GrantedAuthority> auths = new ArrayList<>();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        for(String role: user.getRoles()) {
+        for(String role: createUserRequest.getRoles()) {
             auths.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.toUpperCase()));
         }
 
-        CustomUser cUser = new CustomUser(user.getUsername(), bCryptPasswordEncoder.encode(user.getPassword()), auths);
+        CustomUser cUser = new CustomUser(createUserRequest.getUsername(), bCryptPasswordEncoder.encode(createUserRequest.getPassword()), auths);
         log.info(cUser.toString());
         InMemoryUserDetailsManager inMemoryUserDetailsManager = CustomUserDetailsManager.instance.getInMemoryUserDetailsManager();
         inMemoryUserDetailsManager.createUser(cUser);
